@@ -5,44 +5,92 @@
 
 ## Installation And Run
 Copy .env.example into .env and fill up **SECRET_KEY**
-```bash
+```
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py createsuperuser    # creating the super user for admin site access
 python manage.py runserver
 ```
 
 # Implementation
-1. **django-rest** library for REST API implementation
-2. Strict **type definition** and **validation check** using **Serializer** and **typing** libraries
-3. Filtering  
-- Filtering based on these fields:  
-**min_previous_jobs_count**, **max_previous_jobs_count**, **previous_jobs_count**, **status**  
-http://localhost:8000/consumers/?previous_jobs_count=1  
-http://localhost:8000/consumers/?min_previous_jobs_count=1  
-http://localhost:8000/consumers/?status=1
-- Multiple filtering conditions work at the same time with each other:  
-http://localhost:8000/consumers/?previous_jobs_count=1&status=collected
-4. Pagination
-- Using **PageNumberPagination**  
-https://www.django-rest-framework.org/api-guide/pagination/#pagenumberpagination
-- Queries  
-http://localhost:8000/consumers/?page=1  
-http://localhost:8000/consumers/?page=1&page_size=50
-5. Ordering
-- Ordering based on these fields:  
-**id**, **status**, **previous_jobs_count**, **street**, **amount_due**  
-http://localhost:8000/consumers/?previous_jobs_count=1&status=collected&page_size=5&page=2&ordering=-amount_due
+1. **django** library
+2. **django-rest** library for REST API implementation
+3. Strict **type definition** and **validation check** using **Serializer** and **typing** libraries
 
+
+# APIs
+1. Account Creation  
+```
+URL: http://localhost:8000/accounts/ (GET)
+
+Request: {
+  "email": "user@example.com"
+}
+
+Response: {
+  "uuid": "bf21637e-b0b5-4b3a-8fe3-179be1635941",
+  "email": "user@example.com",
+  "balance": 0,
+  "created_at": "2023-03-20T10:03:02.539500Z",
+  "updated_at": "2023-03-20T10:03:02.539500Z"
+}
+```
+2. Account Detail (Get Balance)  
+```
+URL: http://localhost:8000/accounts/{uuid}/ (GET)
+
+Response: {
+  "uuid": "bf21637e-b0b5-4b3a-8fe3-179be1635941",
+  "email": "user@example.com",
+  "balance": 15,
+  "created_at": "2023-03-20T10:03:02.539500Z",
+  "updated_at": "2023-03-20T10:03:02.539500Z"
+}
+```
+3. Send money to another account
+```
+URL: http://localhost:8000/accounts/{uuid}/send/ (POST)
+
+Request: {
+  "receiver": "receiver@email.com",  # Receiver account email
+  "amount": 15
+}
+
+Response: {
+  "uuid": "bf21637e-b0b5-4b3a-8fe3-179be1635941",
+  "email": "user@example.com",
+  "balance": 15,
+  "created_at": "2023-03-20T10:03:02.539500Z",
+  "updated_at": "2023-03-20T10:03:02.539500Z"
+}
+```
+4. Transaction History
+```
+URL: http://localhost:8000/accounts/{uuid}/transactions/ (GET)
+
+Response: [
+  {
+    "uuid": "e32a2e63-a9e8-4cf9-8c4a-38b335a02b78",
+    "target": {
+      "uuid": "7f2e0e5c-2aab-4bf5-93be-c8a4bd08003c",
+      "email": "test@gmail.com"
+    },
+    "type": "receive",
+    "amount": 1,
+    "created_at": "2023-03-20T05:56:07.940452Z",
+    "updated_at": "2023-03-20T05:56:07.940452Z"
+  }
+]
+```
 
 # Unit Testing
-```bash
+```
 pytest
 ```
 
 ## Swagger API Docs
 http://localhost:8000/docs/
 
-## Heroku CLOUD URL
-https://aktos.herokuapp.com/consumers/  
-https://aktos.herokuapp.com/admin/  
-https://aktos.herokuapp.com/docs/
+
+## Admin Site
+http://localhost:8000/admin/

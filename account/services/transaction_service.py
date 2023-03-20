@@ -21,5 +21,5 @@ class TransactionService:
         sender_account.balance = sender_account.balance - amount
         sender_account.save(update_fields=['balance'])
 
-        receiver_account.balance = sender_account.balance + amount
+        receiver_account.balance = receiver_account.balance + amount
         receiver_account.save(update_fields=['balance'])
